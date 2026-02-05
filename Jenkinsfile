@@ -11,15 +11,16 @@ pipeline{
         }
         stage('Build maven project'){
             steps{
-                bat "mvn clean install -DskipTests=true"
+                sh "mvn clean install -DskipTests=true"
             }
         }
         stage('Test') {
             steps {
                 script {
-                    bat 'mvn test'
+                    sh 'mvn test'
                 }
             }
         }
     }
 }
+
