@@ -24,13 +24,14 @@ pipeline{
                     sh 'mvn test'
                 }
             }
-     stage('Deploy')
-            {
+     stage('Deploy') {
+         
+         steps {
                 sh 'cp $BUILD_JAR $APP_DIR/ &JAR_NAME'
             }
         }
     }
-}
+
 
 
 
