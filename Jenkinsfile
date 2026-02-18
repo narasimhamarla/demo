@@ -30,7 +30,7 @@ pipeline{
             steps{
         
 
-                    
+                    //docker remove old container
                     sh '''
                     docker stop $CONTAINER_NAME || true
                     docker rm $CONTAINER_NAME || true
@@ -58,6 +58,7 @@ pipeline{
         }
     }
 }
+
 
 
 
