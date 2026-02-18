@@ -28,7 +28,7 @@ pipeline{
             }
         stage('Docker Build & Run'){
             steps{
-        
+    
 
                     //docker remove old container
                     sh '''
@@ -58,6 +58,7 @@ pipeline{
         }
     }
 }
+
 
 
 
