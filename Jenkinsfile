@@ -7,6 +7,8 @@ pipeline{
         APP_DIR="/opt/springboot-app"
         JAR_NAME="app.jar"
         BUILD_JAR="target/demo-0.0.2-SNAPSHOT.jar"
+        IMAGE_NAME="demo-app"
+        CONTAINER_NAME="demo-container"
     }
     stages{
         stage('Checkout'){
@@ -24,6 +26,30 @@ pipeline{
                     sh 'mvn test'
                 }
             }
+        stage('Docker Build & Run'){
+            steps{
+        
+
+                    
+                    sh '''
+                    docker stop $CONTAINER_NAME || true
+                    docker rm $CONTAINER_NAME || true
+                    '''
+
+                    // Build Docker image
+                    sh '''
+                    docker build -t $IMAGE_NAME .
+                    '''
+
+                    // Run new container
+                    sh '''
+                    docker run -d \
+                    --name $CONTAINER_NAME \
+                    -p 8081:8080 \
+                    $IMAGE_NAME
+                    '''
+            }
+        }
      stage('Deploy') {
          
          steps {
@@ -32,5 +58,6 @@ pipeline{
         }
     }
 }
+
 
 
