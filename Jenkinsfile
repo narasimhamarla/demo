@@ -4,7 +4,7 @@ pipeline {
     tools {
         maven 'MAVEN'
     }
-
+    
     environment {
         APP_DIR = "/opt/springboot-app"
         JAR_NAME = "app.jar"
@@ -67,3 +67,4 @@ pipeline {
         }
     }
 }
+
