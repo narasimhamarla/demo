@@ -1,65 +1,69 @@
-pipeline{
+pipeline {
     agent any
-    tools{
+
+    tools {
         maven 'MAVEN'
     }
-    environment{
-        APP_DIR="/opt/springboot-app"
-        JAR_NAME="app.jar"
-        BUILD_JAR="target/demo-0.0.2-SNAPSHOT.jar"
-        IMAGE_NAME="demo-app"
-        CONTAINER_NAME="demo-container"
+
+    environment {
+        APP_DIR = "/opt/springboot-app"
+        JAR_NAME = "app.jar"
+        BUILD_JAR = "target/demo-0.0.3-SNAPSHOT.jar"
+        IMAGE = "veera03007/springboot-app"
+        DOCKERHUB_CREDS = credentials('dockerhub')
     }
-    stages{
-        stage('Checkout'){
-            steps{
-               checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/narasimhamarla/demo.git']])
-        }
-        }
-        stage('Build maven project'){
-            steps{
-                sh "mvn clean install -DskipTests=true"
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
             }
         }
+
+        stage('Build') {
+            steps {
+                sh "mvn clean install"
+            }
+        }
+
         stage('Test') {
             steps {
-                    sh 'mvn test'
-                }
-            }
-        stage('Docker Build & Run'){
-            steps{
-    
-
-                    //docker remove old container
-                    sh '''
-                    docker stop $CONTAINER_NAME || true
-                    docker rm $CONTAINER_NAME || true
-                    '''
-
-                    // Build Docker image
-                    sh '''
-                    docker build -t $IMAGE_NAME .
-                    '''
-
-                    // Run new container
-                    sh '''
-                    docker run -d \
-                    --name $CONTAINER_NAME \
-                    -p 8081:8080 \
-                    $IMAGE_NAME
-                    '''
+                sh "mvn test"
             }
         }
-     stage('Deploy') {
-         
-         steps {
-                sh 'cp $BUILD_JAR $APP_DIR/$JAR_NAME'
+
+        stage('Docker Build') {
+            steps {
+                sh "docker build -t ${IMAGE} ."
+            }
+        }
+
+        stage('Docker Run') {
+            steps {
+                sh "docker rm -f demo || true"
+                sh "docker run -d --name demo -p 8081:9999 ${IMAGE}"
+            }
+        }
+
+        stage('Docker Login') {
+            steps {
+                sh """
+                echo ${DOCKERHUB_CREDS_PSW} | docker login -u ${DOCKERHUB_CREDS_USR} --password-stdin
+                """
+            }
+        }
+
+        stage('Push Image') {
+            steps {
+                sh "docker push ${IMAGE}"
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh "cp ${BUILD_JAR} ${APP_DIR}/${JAR_NAME}"
             }
         }
     }
 }
-
-
-
-
-
