@@ -9,7 +9,7 @@ pipeline {
         APP_DIR = "/opt/springboot-app"
         JAR_NAME = "app.jar"
         BUILD_JAR = "target/demo-0.0.3-SNAPSHOT.jar"
-        IMAGE = "veera03007/springboot-app"
+        IMAGE = "narasimha85/springboot-app"
         DOCKERHUB_CREDS = credentials('dockerhub')
     }
 
@@ -67,4 +67,5 @@ pipeline {
         }
     }
 }
+
 
